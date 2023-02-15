@@ -1,4 +1,4 @@
-const {sequelize} = require('./db')
+const {sequelizeCon} = require('./db')
 const {Restaurant, Menu} = require('./models/index')
 const {
     seedRestaurant,
@@ -13,31 +13,55 @@ describe('Restaurant and Menu Models', () => {
         // the 'sync' method will create tables based on the model class
         // by setting 'force:true' the tables are recreated each time the 
         // test suite is run
-        await sequelize.sync({ force: true });
+        await sequelizeCon.sync({ force: true });
     });
 
     test('can create a Restaurant', async () => {
         // TODO - write test
-        expect('NO TEST').toEqual('EXPECTED DATA')
+
+        await Restaurant.create(seedRestaurant[0])
+        const foundRestaurant = await Restaurant.findAll()
+
+        expect(foundRestaurant.length).toEqual(1)
     });
 
     test('can create a Menu', async () => {
         // TODO - write test
-        expect('NO TEST').toEqual('EXPECTED DATA')
+
+        await Menu.create(seedMenu[0])
+        const foundMenu = await Menu.findAll()
+
+        expect(foundMenu.length).toEqual(1)
     });
 
     test('can find Restaurants', async () => {
         // TODO - write test
-        expect('NO TEST').toEqual('EXPECTED DATA')
+
+        await Restaurant.create(seedRestaurant[1])
+        const foundById = await Restaurant.findByPk(2)
+
+        //Here we find the Restaurant Object which has name LittleSheep
+        expect(foundById.dataValues.name).toEqual("LittleSheep")
     });
 
     test('can find Menus', async () => {
         // TODO - write test
-        expect('NO TEST').toEqual('EXPECTED DATA')
+
+        await Menu.create(seedMenu[1])
+        const foundById = await Menu.findByPk(2)
+
+        //Here we find the Menu Object which has title Lunch
+        expect(foundById.dataValues.title).toEqual("Lunch")
     });
 
     test('can delete Restaurants', async () => {
         // TODO - write test
-        expect('NO TEST').toEqual('EXPECTED DATA')
+        const newRestaurant = await Restaurant.create(seedRestaurant[2])
+        
+        await newRestaurant.destroy()
+
+        const foundRestaurant = await Restaurant.findAll()
+        
+        expect(foundRestaurant.length).toEqual(2)
     });
 })
