@@ -1,5 +1,5 @@
 const {sequelizeCon} = require('./db')
-const {Restaurant, Menu} = require('./models/index')
+const {Restaurant, Menu, Item} = require('./models/index')
 const {
     seedRestaurant,
     seedMenu,
@@ -53,6 +53,38 @@ describe('Restaurant and Menu Models', () => {
         //Here we find the Menu Object which has title Lunch
         expect(foundById.dataValues.title).toEqual("Lunch")
     });
+
+    test('association with Restaurant & Menu', async () => {
+        // TODO - write test
+
+        const testing = await Restaurant.findByPk(1)
+        await testing.addMenus(1)
+        const getResults = await testing.getMenus()
+        
+        // "Breakfast" from Menu is now associated with "AppleBees"
+        // from Restaurant
+        expect(getResults[0].dataValues.title).toEqual("Breakfast")
+    });
+
+    test('Association with Menu & Items', async () => {
+        
+        await Item.bulkCreate([{ name: "Steak", image: "Steak", price: 18.50,
+        vegetarian: false },
+        { name: "Bean Tacos", image: "Tacos", price: 11.25,
+        vegetarian: true }])
+
+        await Menu.create(seedMenu[2])
+        const menuTesting = await Menu.findByPk(3) //dinner
+
+        await menuTesting.addItems(1)
+        await menuTesting.addItems(2)
+
+        const getItems = await menuTesting.getItems()
+    
+        expect(getItems[0].dataValues.name).toEqual("Steak")
+        expect(getItems[1].dataValues.name).toEqual("Bean Tacos")
+
+    })
 
     test('can delete Restaurants', async () => {
         // TODO - write test
